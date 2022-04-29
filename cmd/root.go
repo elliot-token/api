@@ -4,8 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/elliot-token/api/app/api"
+	"github.com/elliot-token/api/app/repository"
+	"github.com/elliot-token/api/app/service"
 	"github.com/elliot-token/api/config"
+	"github.com/elliot-token/api/server"
 	"github.com/spf13/cobra"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/spf13/viper"
 )
@@ -22,8 +28,19 @@ const (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use: "api",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("%+v", cfg)
+	RunE: func(cmd *cobra.Command, args []string) error {
+
+		db, err := gorm.Open(postgres.Open(cfg.Database.Connection))
+		if err != nil {
+			return fmt.Errorf("failed to open connection: %w", err)
+		}
+
+		userRepo := repository.NewUserRepository(db)
+		userSvc := service.NewUserService(userRepo)
+		handler := api.NewHandler(userSvc)
+
+		srv := server.New(cfg.Server, handler)
+		return srv.ListenAndServe()
 	},
 }
 

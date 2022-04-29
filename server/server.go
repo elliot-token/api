@@ -1,0 +1,24 @@
+package server
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/elliot-token/api/app/api"
+	"github.com/elliot-token/api/config"
+	"github.com/gin-gonic/gin"
+)
+
+func New(srvConf config.Server, handler api.Handler) *http.Server {
+	// Default engine Logger and Recovery middleware already attached
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.Default()
+
+	apiV1 := router.Group("/api/v1")
+	apiV1.POST("/signup", handler.SignUp)
+
+	return &http.Server{
+		Addr:    fmt.Sprintf(":%d", srvConf.Port),
+		Handler: router,
+	}
+}
