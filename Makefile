@@ -14,4 +14,4 @@ build:
 	docker build --build-arg GIT_COMMIT=$(GIT_COMMIT) --tag $(IMAGE_NAME):$(APP_VERSION) .
 
 push:
-	docker push
+	docker push $(IMAGE_NAME):$(APP_VERSION)
