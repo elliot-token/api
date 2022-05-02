@@ -43,7 +43,7 @@ func (u *userRepo) SaveUser(user *domain.UserEntity) error {
 
 func (u *userRepo) GetUser(walletAddr string) (*domain.UserEntity, error) {
 	var user UserDBModel
-	if err := u.db.Where("wallet_address = ?", walletAddr).First(&user, walletAddr).Error; err != nil {
+	if err := u.db.Where("wallet_address = ?", walletAddr).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, service.ErrWalletNotFound
 		}
