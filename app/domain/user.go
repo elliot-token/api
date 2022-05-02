@@ -8,5 +8,6 @@ type UserEntity struct {
 type UserRepository interface {
 	IsUsernameExist(username string) (bool, error)
 	IsWalletExist(walletAddr string) (bool, error)
-	SaveUser(user UserEntity) error
+	SaveUser(user *UserEntity) error
+	GetUser(walletAddr string) (*UserEntity, error)
 }

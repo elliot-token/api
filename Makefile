@@ -2,16 +2,19 @@
 
 SHELL := /bin/bash
 
-IMAGE_NAME := ventilo/elliot-api
 APP_VERSION := 0.0.1
+GIT_COMMIT := $(shell git rev-parse --short HEAD)
+
+IMAGE_NAME := ventilo/elliot-api
+IMAGE_TAG := $(APP_VERSION)-$(GIT_COMMIT)
 
 ## help: Display this help message
 help: Makefile
 	@sed -n 's/^##//p' $<
 
 build:
-	GOOS=linux GOARCH=amd64 go build -o build/app
-	docker build --build-arg GIT_COMMIT=$(GIT_COMMIT) --tag $(IMAGE_NAME):$(APP_VERSION) .
+	GOOS=linux GOARCH=amd64 go build -o .build/app
+	docker build --tag $(IMAGE_NAME):$(IMAGE_TAG) .
 
 push:
-	docker push $(IMAGE_NAME):$(APP_VERSION)
+	docker push $(IMAGE_NAME):$(IMAGE_TAG)

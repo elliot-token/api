@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/elliot-token/api/app/domain"
+	"github.com/elliot-token/api/app/service"
 	"gorm.io/gorm"
 )
 
@@ -30,14 +31,28 @@ func NewUserRepository(db *gorm.DB) domain.UserRepository {
 	}
 }
 
-func (u *userRepo) SaveUser(user domain.UserEntity) error {
+func (u *userRepo) SaveUser(user *domain.UserEntity) error {
 	if err := u.db.Create(&UserDBModel{
 		WalletAddress: user.WalletAddress,
 		Username:      user.Username,
 	}).Error; err != nil {
-		return fmt.Errorf("failed to save user: %w", err)
+		return fmt.Errorf("failed to save user to database: %w", err)
 	}
 	return nil
+}
+
+func (u *userRepo) GetUser(walletAddr string) (*domain.UserEntity, error) {
+	var user UserDBModel
+	if err := u.db.First(&user, walletAddr).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, service.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to query for wallet address: %w", err)
+	}
+	return &domain.UserEntity{
+		WalletAddress: user.WalletAddress,
+		Username:      user.Username,
+	}, nil
 }
 
 func (u *userRepo) IsUsernameExist(username string) (bool, error) {

@@ -9,10 +9,12 @@ import (
 
 var (
 	ErrUserConflict = errors.New("username already exists")
+	ErrUserNotFound = errors.New("wallet address not found")
 )
 
 type UserService interface {
-	SignUp(user domain.UserEntity) error
+	SignUp(user *domain.UserEntity) error
+	GetUser(walletAddr string) (*domain.UserEntity, error)
 }
 
 type userService struct {
@@ -25,18 +27,25 @@ func NewUserService(userRepo domain.UserRepository) UserService {
 	}
 }
 
-func (u *userService) SignUp(user domain.UserEntity) error {
-	exist, err := u.userRepo.IsUsernameExist(user.Username)
-	if err != nil {
-		return fmt.Errorf("failed to check username: %w", err)
+func (u *userService) SignUp(user *domain.UserEntity) error {
+	if exist, err := u.userRepo.IsWalletExist(user.WalletAddress); err != nil {
+		return fmt.Errorf("failed to check wallet address: %w", err)
+	} else if exist {
+		return fmt.Errorf("failed to save user: %w", ErrUserConflict)
 	}
-	if exist {
+
+	if exist, err := u.userRepo.IsUsernameExist(user.Username); err != nil {
+		return fmt.Errorf("failed to check username: %w", err)
+	} else if exist {
 		return fmt.Errorf("failed to save user: %w", ErrUserConflict)
 	}
 
 	if err := u.userRepo.SaveUser(user); err != nil {
 		return fmt.Errorf("failed to save user: %w", err)
 	}
-
 	return nil
+}
+
+func (u *userService) GetUser(walletAddr string) (*domain.UserEntity, error) {
+	return u.userRepo.GetUser(walletAddr)
 }

@@ -16,6 +16,7 @@ func New(srvConf config.Server, handler api.Handler) *http.Server {
 
 	apiV1 := router.Group("/api/v1")
 	apiV1.POST("/signup", handler.SignUp)
+	apiV1.GET("/users/:walletAddr", handler.GetUser)
 
 	return &http.Server{
 		Addr:    fmt.Sprintf(":%d", srvConf.Port),
