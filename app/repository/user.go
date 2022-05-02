@@ -45,7 +45,7 @@ func (u *userRepo) GetUser(walletAddr string) (*domain.UserEntity, error) {
 	var user UserDBModel
 	if err := u.db.First(&user, walletAddr).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, service.ErrUserNotFound
+			return nil, service.ErrWalletNotFound
 		}
 		return nil, fmt.Errorf("failed to query for wallet address: %w", err)
 	}

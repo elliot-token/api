@@ -31,7 +31,7 @@ func (h *handler) SignUp(c *gin.Context) {
 		WalletAddress: req.WalletAddress,
 		Username:      req.Username,
 	}); err != nil {
-		if errors.Is(err, service.ErrUserConflict) {
+		if errors.Is(err, service.ErrUsernameConflict) || errors.Is(err, service.ErrWalletConflict) {
 			c.AbortWithStatusJSON(
 				http.StatusConflict,
 				errorMessage{
@@ -52,7 +52,7 @@ func (h *handler) GetUser(c *gin.Context) {
 	walletAddr := c.Param("walletAddr")
 	user, err := h.userSvc.GetUser(walletAddr)
 	if err != nil {
-		if errors.Is(err, service.ErrUserNotFound) {
+		if errors.Is(err, service.ErrWalletNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
