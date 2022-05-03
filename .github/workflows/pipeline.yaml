@@ -59,8 +59,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
+          mkdir -p ~/.kube
           echo -n ${{ secrets.OKTETO_KUBECONFIG_BASE64 }} | base64 -d > ~/.kube/config
-          echo -n ${{ secrets.KUSTOMIZE_SECRETS_BASE64 }} | base64 -d > deploy/kustomize/overlays/okteto/secrets.env
+      - run: |
+          cd deploy/kustomize/overlays/okteto
+          echo -n ${{ secrets.KUSTOMIZE_SECRETS_BASE64 }} | base64 -d > secrets.env
           kustomize edit set image ${{ needs.push.outputs.image }}
           kustomize build | kubectl apply -f -
       - run:
