@@ -2,6 +2,6 @@ FROM gcr.io/distroless/base
 
 COPY .build/app /usr/bin/app
 
-USER nonroot:nonroot
+RUN chmod +x /usr/bin/app
 
 ENTRYPOINT ["/usr/bin/app"]
