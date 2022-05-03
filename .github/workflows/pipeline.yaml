@@ -50,3 +50,18 @@ jobs:
         push: true
         context: .
         tags: ${{ steps.set_img.outputs.image }}
+    outputs:
+      image: ${{ steps.set_img.outputs.image }}
+
+  kustomize:
+    needs: push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          echo -n ${{ secrets.OKTETO_KUBECONFIG_BASE64 }} | base64 -d >> ~/.kube/config
+          echo -n ${{ secrets.KUSTOMIZE_SECRETS_BASE64 }} | base64 -d >> deploy/kustomize/overlays/okteto/secrets.env
+          kustomize edit set image ${{ needs.push.outputs.image }}
+          kustomize build | kubectl apply -f -
+      - run:
+          git commit -m "update container image to ${{ needs.push.outputs.image }}"

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elliot-api-deploy
+  labels:
+    app: elliot-api
+spec:
+  selector:
+    matchLabels:
+      app: elliot-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elliot-api
+    spec:
+      containers:
+        - name: app
+          image: ventilo/elliot-api:0.0.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          args:
+            - --config
+            - /config/config.yaml
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+              readOnly: true
+          env:
+            - name: ELLIOT_DATABASE_CONNECTION
+              valueFrom:
+                secretKeyRef:
+                  key: ELLIOT_DATABASE_CONNECTION
+                  name: elliot-api-secret
+      volumes:
+        - name: config-volume
+          configMap:
+            name: elliot-api-config

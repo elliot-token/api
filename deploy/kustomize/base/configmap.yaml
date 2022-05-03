@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elliot-api-config
+data:
+  config.yaml: |-
+    server:
+      port: 8080
+    smartContract:
+      address: ""
+    database:
+      connection: ""
