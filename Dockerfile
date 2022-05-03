@@ -1,6 +1,7 @@
-FROM gcr.io/distroless/base
+FROM debian:buster-slim
 
-COPY --chmod=755 .build/app /usr/bin/app
-USER nonroot:nonroot
+COPY .build/app /usr/bin/app
+
+RUN chmod +x /usr/bin/app
 
 ENTRYPOINT ["/usr/bin/app"]
