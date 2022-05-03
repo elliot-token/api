@@ -45,6 +45,8 @@ jobs:
       with:
         name: app
         path: .build/app
+    - run: |
+        chmod +x .build/app
     - uses: docker/build-push-action@v2
       with:
         push: true
