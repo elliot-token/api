@@ -43,9 +43,8 @@ jobs:
         name: app
         path: .build/app
     - run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
+    - uses: docker/build-push-action@v2
       with:
         push: true
+        context: .
         tags: ventilo/elliot-api:${{ env.APP_VERSION }}-${{ steps.vars.outputs.sha_short }}
