@@ -2,18 +2,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- ../../base
+  - ../../base
 
 patches:
-- path: service.patch.yaml
+  - path: service.patch.yaml
 
 secretGenerator:
-- behavior: replace
-  envs:
-  - secrets.env
-  name: elliot-api-secret
-  type: Opaque
-
-images:
-- name: ventilo/elliot-api
-  newTag: 0.0.1-f1c928e
+  - behavior: replace
+    envs:
+      - secrets.env
+    name: elliot-api-secret
+    type: Opaque
