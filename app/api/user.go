@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/elliot-token/api/app/domain"
 	"github.com/elliot-token/api/app/service"
@@ -27,7 +28,7 @@ func (h *handler) SignUp(c *gin.Context) {
 	}
 
 	walletAddr := c.GetString(walletAddrKey)
-	if req.WalletAddress != walletAddr {
+	if !strings.EqualFold(req.WalletAddress, walletAddr) {
 		c.AbortWithStatusJSON(
 			http.StatusForbidden,
 			errorMessage{
