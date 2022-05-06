@@ -17,7 +17,7 @@ func New(srvConf config.Server, handler api.Handler) *http.Server {
 	router.Use(cors.Default())
 
 	apiV1 := router.Group("/api/v1")
-	apiV1.POST("/signup", handler.SignUp)
+	apiV1.POST("/signup", handler.GetAuth, handler.SignUp)
 	apiV1.GET("/users/:walletAddr", handler.GetUser)
 
 	return &http.Server{

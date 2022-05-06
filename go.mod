@@ -3,6 +3,8 @@ module github.com/elliot-token/api
 go 1.17
 
 require (
+	github.com/ethereum/go-ethereum v1.10.17
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
@@ -11,8 +13,9 @@ require (
 )
 
 require (
+	github.com/btcsuite/btcd/btcec/v2 v2.1.2 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect

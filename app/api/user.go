@@ -21,9 +21,19 @@ type getUserResponse struct {
 
 func (h *handler) SignUp(c *gin.Context) {
 	var req signUpRequest
-	if err := c.Bind(&req); err != nil {
-		// TODO debug log here
+	if err := c.ShouldBind(&req); err != nil {
 		badRequest(c, "invalid body request")
+		return
+	}
+
+	walletAddr := c.GetString(walletAddrKey)
+	if req.WalletAddress != walletAddr {
+		c.AbortWithStatusJSON(
+			http.StatusForbidden,
+			errorMessage{
+				Error: "wallet address does not match the one in signature",
+			},
+		)
 		return
 	}
 
@@ -40,7 +50,6 @@ func (h *handler) SignUp(c *gin.Context) {
 			)
 			return
 		}
-		// TODO log error here
 		internalServerError(c)
 		return
 	}

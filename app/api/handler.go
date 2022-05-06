@@ -6,6 +6,7 @@ import (
 )
 
 type Handler interface {
+	GetAuth(c *gin.Context)
 	SignUp(c *gin.Context)
 	GetUser(c *gin.Context)
 }
