@@ -6,8 +6,8 @@ import (
 
 	"github.com/elliot-token/api/app/api"
 	"github.com/elliot-token/api/config"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	cors "github.com/rs/cors/wrapper/gin"
 )
 
 func New(srvConf config.Server, handler api.Handler) *http.Server {
