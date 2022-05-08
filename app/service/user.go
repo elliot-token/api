@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/elliot-token/api/app/domain"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 
 type UserService interface {
 	SignUp(user *domain.UserEntity) error
-	GetUser(walletAddr string) (*domain.UserEntity, error)
+	GetUser(walletAddr common.Address) (*domain.UserEntity, error)
 }
 
 type userService struct {
@@ -47,6 +48,6 @@ func (u *userService) SignUp(user *domain.UserEntity) error {
 	return nil
 }
 
-func (u *userService) GetUser(walletAddr string) (*domain.UserEntity, error) {
+func (u *userService) GetUser(walletAddr common.Address) (*domain.UserEntity, error) {
 	return u.userRepo.GetUser(walletAddr)
 }

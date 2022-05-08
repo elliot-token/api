@@ -7,6 +7,7 @@ import (
 
 	"github.com/elliot-token/api/app/domain"
 	"github.com/elliot-token/api/app/service"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +40,7 @@ func (h *handler) SignUp(c *gin.Context) {
 	}
 
 	if err := h.userSvc.SignUp(&domain.UserEntity{
-		WalletAddress: req.WalletAddress,
+		WalletAddress: common.HexToAddress(req.WalletAddress),
 		Username:      req.Username,
 	}); err != nil {
 		if errors.Is(err, service.ErrUsernameConflict) || errors.Is(err, service.ErrWalletConflict) {
@@ -60,7 +61,7 @@ func (h *handler) SignUp(c *gin.Context) {
 
 func (h *handler) GetUser(c *gin.Context) {
 	walletAddr := c.Param("walletAddr")
-	user, err := h.userSvc.GetUser(walletAddr)
+	user, err := h.userSvc.GetUser(common.HexToAddress(walletAddr))
 	if err != nil {
 		if errors.Is(err, service.ErrWalletNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
@@ -71,7 +72,7 @@ func (h *handler) GetUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, getUserResponse{
-		WalletAddress: user.WalletAddress,
+		WalletAddress: user.WalletAddress.Hex(),
 		Username:      user.Username,
 	})
 }

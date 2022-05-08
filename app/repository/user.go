@@ -7,6 +7,7 @@ import (
 
 	"github.com/elliot-token/api/app/domain"
 	"github.com/elliot-token/api/app/service"
+	"github.com/ethereum/go-ethereum/common"
 	"gorm.io/gorm"
 )
 
@@ -33,7 +34,7 @@ func NewUserRepository(db *gorm.DB) domain.UserRepository {
 
 func (u *userRepo) SaveUser(user *domain.UserEntity) error {
 	if err := u.db.Create(&UserDBModel{
-		WalletAddress: user.WalletAddress,
+		WalletAddress: user.WalletAddress.Hex(),
 		Username:      user.Username,
 	}).Error; err != nil {
 		return fmt.Errorf("failed to save user to database: %w", err)
@@ -41,16 +42,16 @@ func (u *userRepo) SaveUser(user *domain.UserEntity) error {
 	return nil
 }
 
-func (u *userRepo) GetUser(walletAddr string) (*domain.UserEntity, error) {
+func (u *userRepo) GetUser(walletAddr common.Address) (*domain.UserEntity, error) {
 	var user UserDBModel
-	if err := u.db.Where("wallet_address = ?", walletAddr).First(&user).Error; err != nil {
+	if err := u.db.Where("wallet_address = ?", walletAddr.Hex()).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, service.ErrWalletNotFound
 		}
 		return nil, fmt.Errorf("failed to query for wallet address: %w", err)
 	}
 	return &domain.UserEntity{
-		WalletAddress: user.WalletAddress,
+		WalletAddress: common.HexToAddress(user.WalletAddress),
 		Username:      user.Username,
 	}, nil
 }
@@ -65,8 +66,8 @@ func (u *userRepo) IsUsernameExist(username string) (bool, error) {
 	return true, nil
 }
 
-func (u *userRepo) IsWalletExist(walletAddr string) (bool, error) {
-	if err := u.db.Where("wallet_address = ?", walletAddr).First(&UserDBModel{}).Error; err != nil {
+func (u *userRepo) IsWalletExist(walletAddr common.Address) (bool, error) {
+	if err := u.db.Where("wallet_address = ?", walletAddr.Hex()).First(&UserDBModel{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
