@@ -14,7 +14,7 @@ func New(srvConf config.Server, handler api.Handler) *http.Server {
 	// Default engine Logger and Recovery middleware already attached
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.AllowAll())
 
 	apiV1 := router.Group("/api/v1")
 	apiV1.POST("/signup", handler.GetAuth, handler.SignUp)
