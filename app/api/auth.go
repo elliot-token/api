@@ -3,9 +3,11 @@ package api
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/elliot-token/api/utils/ether"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,4 +61,17 @@ func (h *handler) GetAuth(c *gin.Context) {
 
 	// Pass wallet address to the next handler
 	c.Set(walletAddrKey, address)
+}
+
+func verifyAddress(c *gin.Context, addr common.Address) error {
+	var addrFromSig common.Address
+	if val, ok := c.Get(walletAddrKey); ok && val != nil {
+		addrFromSig, _ = val.(common.Address)
+	}
+
+	if addrFromSig != addr {
+		return fmt.Errorf("wallet address does not match the one in signature")
+	}
+
+	return nil
 }

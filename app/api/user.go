@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/elliot-token/api/app/domain"
 	"github.com/elliot-token/api/app/service"
@@ -28,12 +27,16 @@ func (h *handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	walletAddr := c.GetString(walletAddrKey)
-	if !strings.EqualFold(req.WalletAddress, walletAddr) {
+	addrFromReq, err := common.NewMixedcaseAddressFromString(req.WalletAddress)
+	if err != nil {
+		badRequest(c, err.Error())
+	}
+
+	if err := verifyAddress(c, addrFromReq.Address()); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusForbidden,
 			errorMessage{
-				Error: "wallet address does not match the one in signature",
+				Error: err.Error(),
 			},
 		)
 		return
@@ -60,8 +63,12 @@ func (h *handler) SignUp(c *gin.Context) {
 }
 
 func (h *handler) GetUser(c *gin.Context) {
-	walletAddr := c.Param("walletAddr")
-	user, err := h.userSvc.GetUser(common.HexToAddress(walletAddr))
+	addrFromReq, err := common.NewMixedcaseAddressFromString(c.Param("walletAddr"))
+	if err != nil {
+		badRequest(c, err.Error())
+	}
+
+	user, err := h.userSvc.GetUser(addrFromReq.Address())
 	if err != nil {
 		if errors.Is(err, service.ErrWalletNotFound) {
 			c.AbortWithStatus(http.StatusNotFound)
